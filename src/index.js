@@ -1,66 +1,59 @@
+/**
+ * Function count quantity of zeros for given number's factorial in given system
+ * @param {number} number - given number
+ * @param {number} base - given base system
+ * @return {number} quantity of zeros
+ */
 module.exports = function getZerosCount(number, base) {
+  let simpleArr = []; // array of simmple numbers for given base
+  let s = 2;          // basic simple number
+  let proto = base;
 
- let simpleArr =[];
- let i = 2;
- let proto = base;
+  while (s <= proto) {
+    if (proto % s === 0) {
+      simpleArr.push(s);
+      proto /= s;
+    } else { s++; }
+  }
 
-	while(i<=proto){
+  const obj = {};
 
-        if (proto % i == 0) {
-        	simpleArr.push(i);
-        	proto = proto/i;
-        } else {i++};
-	} 
-	    
-	simpleArr.sort((a,b)=>{return a-b}); // got array of simple numbers for base
-  
-	let obj = {};
+  for (let i = 0, length = simpleArr.length; i < length; i++) {
+    const str = simpleArr[i];
+    obj[str] = true;
+  }
 
-    for (let i = 0, length = simpleArr.length; i < length ; i++) {
-    	
-    	let str = simpleArr[i];
-    	obj[str] = true; 
+  simpleArr = Object.keys(obj); // deleted the same elements from array
+
+  const times = []; /* array with how many times each simple number
+is in base ex: for 10 (2 - 1 time , 5 - 1 time ) */
+  let que = base;
+
+  for (let i = 0, length = simpleArr.length; i < length; i++) {
+    times[i] = 0;
+    while (que % simpleArr[i] === 0) {
+      times[i]++;
+      que /= simpleArr[i];
     }
+  }
 
-   	simpleArr = Object.keys(obj); // deleted the same elements from array
-   
-   	let times = []; /* array with how many times each simple number 
-   	is in base ex: for 10 (1 time -2, 1 time -5)*/
-    let que = base;
+  const pow = [];
+  const countZero = []; // count zeros for every simple number
 
-    for(let i = 0, length = simpleArr.length; i < length; i++){
-        
-        times[i] = 0;
-    	while (que % simpleArr[i] == 0){
-    	
-    		times[i]++;
-    		que = que/simpleArr[i];  
-    	}
-    } 
-    
-    let pow = [];    
-    let countZero = [];  // count zeros for every simple number
-        
-	for(let i = 0, length = simpleArr.length; i < length; i++){ 
+  for (let i = 0, length = simpleArr.length; i < length; i++) {
+    pow[i] = 1;
+    countZero[i] = 0;
 
-		pow[i]=1;
-		countZero[i]=0;
+    while (number / Math.pow(simpleArr[i], pow[i]) > 1) {
+      countZero[i] += Math.floor(number / Math.pow(simpleArr[i], pow[i]));
+      pow[i]++;
+    }
+  }
 
-    	while (number/Math.pow(simpleArr[i],pow[i]) >1 ){
- 	 
- 	    	countZero[i] += Math.floor(number/Math.pow(simpleArr[i],pow[i]));
- 	    	pow[i]++;
- 	    
-    	}
-    } 
+  const res = [];
 
-	let res =[];
-
-	for(let i = 0, length = countZero.length; i < length; i++){
-     	
-     	res.push(+countZero[i]/+times[i]);
-	}
-
-    return Math.floor(Math.min(... res));
-}  
-  
+  for (let i = 0, length = countZero.length; i < length; i++) {
+    res.push(+countZero[i] / +times[i]);
+  }
+  return Math.floor(Math.min(...res));
+};
